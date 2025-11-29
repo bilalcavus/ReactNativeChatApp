@@ -1,0 +1,82 @@
+export const stories = [
+  { id: 'add', name: 'Add story', avatar: null },
+  { id: '1', name: 'Terry', avatar: 'https://i.pravatar.cc/150?img=5' },
+  { id: '2', name: 'Craig', avatar: 'https://i.pravatar.cc/150?img=10' },
+  { id: '3', name: 'Roger', avatar: 'https://i.pravatar.cc/150?img=12' },
+  { id: '4', name: 'Nolan', avatar: 'https://i.pravatar.cc/150?img=20' },
+];
+
+export const chats = [
+  {
+    id: '1',
+    name: 'Angel Curtis',
+    msg: 'Please help me find a good monitor for …',
+    avatar: 'https://i.pravatar.cc/150?img=1',
+    time: '02:11',
+    unread: 2,
+  },
+  {
+    id: '2',
+    name: 'Zaire Dorwart',
+    msg: 'Gacor pisan kang',
+    avatar: 'https://i.pravatar.cc/150?img=2',
+    time: '02:11',
+    unread: 0,
+  },
+  {
+    id: '3',
+    name: 'Kelas Malam',
+    msg: 'Bima : No one can come today?',
+    avatar: 'https://i.pravatar.cc/150?img=3',
+    time: '02:11',
+    unread: 2,
+  },
+  {
+    id: '4',
+    name: 'Jocelyn Gouse',
+    msg: 'You’re now an admin',
+    avatar: 'https://i.pravatar.cc/150?img=4',
+    time: '02:11',
+    unread: 0,
+  },
+  {
+    id: '5',
+    name: 'John Doe',
+    msg: 'I don’t know',
+    avatar: 'https://i.pravatar.cc/150?img=5',
+    time: '02:10',
+    unread: 0,
+  },
+  {
+    id: '6',
+    name: 'Melissa Vargas',
+    msg: 'Do whatever you want!',
+    avatar: 'https://i.pravatar.cc/150?img=6',
+    time: '02:05',
+    unread: 0,
+  },
+  {
+    id: '7',
+    name: 'Mike Heisenberg',
+    msg: 'Shut the fuckup',
+    avatar: 'https://i.pravatar.cc/150?img=7',
+    time: '02:05',
+    unread: 0,
+  },
+  {
+    id: '8',
+    name: 'Frank Underwood',
+    msg: 'I’ll become President of U.S.A',
+    avatar: 'https://i.pravatar.cc/150?img=8',
+    time: '02:03',
+    unread: 0,
+  },
+  {
+    id: '9',
+    name: 'Kate Kartzof',
+    msg: 'It’s mine!',
+    avatar: 'https://i.pravatar.cc/150?img=9',
+    time: '02:02',
+    unread: 0,
+  }
+];

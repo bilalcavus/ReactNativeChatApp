@@ -15,7 +15,9 @@ if linkage != nil
 end
 
 target 'MyApp' do
+  
   config = use_native_modules!
+
 
   use_react_native!(
     :path => config[:reactNativePath],
