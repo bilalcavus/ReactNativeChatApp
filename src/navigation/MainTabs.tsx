@@ -22,10 +22,10 @@ export default function MainTabs() {
         },
         tabBarIcon: ({ color, size }) => {
           let iconName = '';
-          if (route.name === 'Chatlist') {
-            iconName = 'home-outline';
+          if (route.name === 'Chat') {
+            iconName = 'chatbubbles-outline';
           } else if (route.name === 'Profile') {
-            iconName = 'add-circle-outline';
+            iconName = 'person-outline';
           } else if (route.name === 'Settings') {
             iconName = 'settings-outline';
           }
@@ -33,7 +33,7 @@ export default function MainTabs() {
         },
       })}
     >
-      <Tab.Screen name="Chatlist" component={ChatListScreen} />
+      <Tab.Screen name="Chat" component={ChatListScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
       <Tab.Screen name="Settings" component={SettingsScreen} />
     </Tab.Navigator>

@@ -1,76 +1,86 @@
 import React from 'react';
-import { View, Text, FlatList, StyleSheet, Image } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Image, Pressable } from 'react-native';
+import { CompositeNavigationProp, useNavigation } from '@react-navigation/native';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { stories, chats } from '../data/mock';
+import { Chat, MainTabParamList, RootStackParamList } from '../navigation/types';
 
-export default function ChatListScreen(){
-    return (
-        <View style ={styles.container}>
+type NavigationProp = CompositeNavigationProp<
+  BottomTabNavigationProp<MainTabParamList, 'Chat'>,
+  NativeStackNavigationProp<RootStackParamList>
+>;
 
-            {/* Header gardaş */}
-            <View style={styles.header}>
-                <Text style ={styles.headerTitle} >
-                    Stories
-                </Text>
-                <View style = {styles.headerIcons}>
-                    <Icon name = "search-outline" size= {22} color="red" style={{marginRight: 20}}></Icon>
-                    <Icon name="ellipsis-horizontal" size={22} color="#000" />
-                </View>
-            </View>
-            {/* Story Flatlist gardaş */}
-            <FlatList
-                data={stories}
-                horizontal
-                showsHorizontalScrollIndicator= {false}
-                contentContainerStyle = {{paddingHorizontal: 16}}
-                style = {{marginTop: 10}}
-                keyExtractor={(item) => item.id}
-                renderItem={({item}) => (
-                    <View style={styles.storyItem}>
-                        {item.id == 'add' ? (
-                            <View style={styles.addStoryCircle}>
-                                <Icon name = "add" size = {28} color={"blue"}></Icon>
-                            </View>
-                        ) : (
-                            item.avatar ? (
-                                <Image source={{uri: item.avatar}} style={styles.storyAvatar}/>
-                            ) : (
-                                <View style={[styles.storyAvatar, styles.addStoryCircle]} />
-                            )
-                        )}
-                        <Text style={styles.storyName}>{item.name}</Text>
-                    </View>
-                )}
-            ></FlatList>
-        <Text style={styles.sectionTitle}>Chats</Text>
-        {/* Chat Flatlist gardaş */}
-        <FlatList
-        data={chats}
-        keyExtractor={(item) => item.id}
-        showsHorizontalScrollIndicator = {true}
+export default function ChatListScreen() {
+  const navigation = useNavigation<NavigationProp>();
+
+  return (
+    <View style={styles.container}>
+      {/* Header gardaş */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Stories</Text>
+        <View style={styles.headerIcons}>
+          <Icon name="search-outline" size={22} color="red" style={{ marginRight: 20 }} />
+          <Icon name="ellipsis-horizontal" size={22} color="#000" />
+        </View>
+      </View>
+
+      {/* Story Flatlist gardaş */}
+      <FlatList
+        data={stories}
+        horizontal
+        showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 16 }}
+        style={{ marginTop: 10 }}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <View style={styles.chatItem}>
-            <Image source={{ uri: item.avatar }} style={styles.chatAvatar} />
-
-            <View style={styles.chatTextContainer}>
-              <Text style={styles.chatName}>{item.name}</Text>
-              <Text style={styles.chatMsg}>{item.msg}</Text>
-            </View>
-
-            <View style={styles.rightContainer}>
-              <Text style={styles.time}>{item.time}</Text>
-              {item.unread > 0 && (
-                <View style={styles.badge}>
-                  <Text style={styles.badgeText}>{item.unread}</Text>
-                </View>
-              )}
-            </View>
+          <View style={styles.storyItem}>
+            {item.id === 'add' ? (
+              <View style={styles.addStoryCircle}>
+                <Icon name="add" size={28} color="blue" />
+              </View>
+            ) : item.avatar ? (
+              <Image source={{ uri: item.avatar }} style={styles.storyAvatar} />
+            ) : (
+              <View style={[styles.storyAvatar, styles.addStoryCircle]} />
+            )}
+            <Text style={styles.storyName}>{item.name}</Text>
           </View>
         )}
       />
-        </View>
-    )
+
+      <Text style={styles.sectionTitle}>Chats</Text>
+      {/* Chat Flatlist gardaş */}
+      <FlatList<Chat>
+        data={chats}
+        keyExtractor={(item) => item.id}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: 16 }}
+        renderItem={({ item }) => (
+          <Pressable onPress={() => navigation.navigate('ChatScreen', { chat: item })}>
+            <View style={styles.chatItem}>
+              <Image source={{ uri: item.avatar }} style={styles.chatAvatar} />
+
+              <View style={styles.chatTextContainer}>
+                <Text style={styles.chatName}>{item.name}</Text>
+                <Text style={styles.chatMsg}>{item.msg}</Text>
+              </View>
+
+              <View style={styles.rightContainer}>
+                <Text style={styles.time}>{item.time}</Text>
+                {item.unread > 0 && (
+                  <View style={styles.badge}>
+                    <Text style={styles.badgeText}>{item.unread}</Text>
+                  </View>
+                )}
+              </View>
+            </View>
+          </Pressable>
+        )}
+      />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
