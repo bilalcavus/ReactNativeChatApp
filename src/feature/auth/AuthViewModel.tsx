@@ -20,11 +20,6 @@ export const useAuthViewModel = create<AuthViewModelState>((set) => ({
       set({ isLoading: true, error: null });
 
       const response = await login(body);
-    console.log("🟢 LOGIN SUCCESS:", response); // gelen data’nın tamamı
-    console.log("🟢 USER:", response.data.user); 
-    console.log("🟢 ACCESS TOKEN:", response.data.accessToken);
-
-
       set({
         user: response.data.user,
         accessToken: response.data.accessToken,
@@ -38,7 +33,6 @@ export const useAuthViewModel = create<AuthViewModelState>((set) => ({
       return response.data;
 
     } catch (err: any) {
-        console.log("🔴 LOGIN ERROR:", err.response?.data || err.message);
       set({
         error: err.response?.data?.message || "Login failed",
         isLoading: false,

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet, Image, Pressable } from 'react-native';
 import { CompositeNavigationProp, useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
@@ -6,6 +6,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Chat, MainTabParamList, RootStackParamList } from '../../navigation/types';
 import { chats, stories } from '../../data/mock';
+import { useConversationViewModel } from '../../feature/chat/ConversationViewModel';
 
 type NavigationProp = CompositeNavigationProp<
   BottomTabNavigationProp<MainTabParamList, 'Chat'>,
@@ -14,6 +15,11 @@ type NavigationProp = CompositeNavigationProp<
 
 export default function ChatListScreen() {
   const navigation = useNavigation<NavigationProp>();
+  const {getConversations, conversations, isLoading, error} = useConversationViewModel();
+
+  useEffect(() => {
+    getConversations();
+  }, [])
 
   return (
     <View style={styles.container}>
@@ -52,8 +58,8 @@ export default function ChatListScreen() {
 
       <Text style={styles.sectionTitle}>Chats</Text>
       {/* Chat Flatlist gardaş */}
-      <FlatList<Chat>
-        data={chats}
+      <FlatList
+        data={conversations}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 16 }}
