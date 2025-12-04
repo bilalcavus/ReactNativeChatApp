@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import ListItem from '../components/ProfileListItem';
+import ListItem from '../../core/components/ProfileListItem';
 
 export default function SettingsScreen() {
   return (

@@ -7,7 +7,13 @@ export type Chat = {
   unread: number;
 };
 
+export type Login = {
+  email: string;
+  password: string;
+}
+
 export type RootStackParamList = {
+  LoginScreen: undefined;
   MainTabs: undefined;
   ChatList: undefined;
   ChatScreen: { chat: Chat };
@@ -18,3 +24,8 @@ export type MainTabParamList = {
   Profile: undefined;
   Settings: undefined;
 };
+
+export type LoginStackParamList = {
+  LoginScreen: undefined;
+  MainTabs: undefined;
+}

@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, Button, StyleSheet, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import ProfileOptions from '../components/ProfileListItem';
-import ListItem from '../components/ProfileListItem';
+import ListItem from '../../core/components/ProfileListItem';
+
 
 
 export default function ProfileScreen() {

@@ -4,8 +4,8 @@ import { CompositeNavigationProp, useNavigation } from '@react-navigation/native
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { stories, chats } from '../data/mock';
-import { Chat, MainTabParamList, RootStackParamList } from '../navigation/types';
+import { Chat, MainTabParamList, RootStackParamList } from '../../navigation/types';
+import { chats, stories } from '../../data/mock';
 
 type NavigationProp = CompositeNavigationProp<
   BottomTabNavigationProp<MainTabParamList, 'Chat'>,
