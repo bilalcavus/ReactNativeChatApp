@@ -1,36 +1,76 @@
-import React from 'react';
-import { View, StyleSheet, Text, Image, KeyboardAvoidingView, Platform, TextInput, Pressable } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, StyleSheet, Text, Image, KeyboardAvoidingView, Platform, TextInput, Pressable, FlatList } from 'react-native';
 import { RouteProp, useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ChatBubble from '../../core/components/ChatBubble';
 import { RootStackParamList } from '../../navigation/types';
+import { useConversationViewModel } from '../../feature/chat/ConversationViewModel';
+import { useAuthViewModel } from '../../feature/auth/AuthViewModel';
+import { sendMessage } from '../../data/service/ChatService';
 
 type ChatScreenRouteProp = RouteProp<RootStackParamList, 'ChatScreen'>;
 
 export default function ChatScreen({ route }: { route: ChatScreenRouteProp }) {
-  const { chat } = route.params;
-  const navigation = useNavigation()
+  const { conversationId, chat } = route.params;
+  const navigation = useNavigation();
+
+  const { getMessages, messages, isLoading, sendMessage } = useConversationViewModel();
+  const { user } = useAuthViewModel();
+  const [messageText, setMessageText] = useState("");
+
+  const onSend = async () => {
+  await sendMessage(chat.name, messageText);
+  setMessageText("");
+  setTimeout(() => {
+  flatListRef.current?.scrollToIndex({ index: 0, animated: true });
+}, 50);
+};
+
+const flatListRef = useRef<FlatList>(null);
+
+
+
+  useEffect(() => {
+    getMessages(conversationId);
+  }, [conversationId]);
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* HEADERR */}
+      
+      {/* Header */}
       <View style={styles.header}>
         <Pressable onPress={() => navigation.goBack()}>
             <Ionicons name="chevron-back" size={30} color="#999" style={{marginRight: 10}} />
         </Pressable>
+
         <Image source={{ uri: chat.avatar }} style={styles.avatar} />
+
         <View>
           <Text style={styles.name}>{chat.name}</Text>
-          <Text style={styles.subtitle}>{chat.time}</Text>
+          <Text style={styles.subtitle}>Online</Text>
         </View>
       </View>
-       {/* Mesajlar */}
-      <View style={styles.messagesArea}>
-        <ChatBubble text='Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'></ChatBubble>
-        <ChatBubble text='Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.' isMe={true}></ChatBubble>
-      </View>
-       <KeyboardAvoidingView 
+
+      {/* Messages */}
+      <FlatList
+        data={messages}
+        ref={flatListRef}
+        maintainVisibleContentPosition={{minIndexForVisible: 0}}
+        keyExtractor={(item) => item.id}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ padding: 16 }}
+        inverted
+        renderItem={({ item }) => (
+          <ChatBubble
+            text={item.text}
+            isMe={item.senderId === user?.id}
+          />
+        )}
+      />
+
+      {/* Input */}
+      <KeyboardAvoidingView 
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={90}
       >
@@ -39,9 +79,11 @@ export default function ChatScreen({ route }: { route: ChatScreenRouteProp }) {
             placeholder="Mesaj yaz..."
             style={styles.input}
             placeholderTextColor="#999"
+            onChangeText={setMessageText}
+            value={messageText}
           />
 
-          <Pressable style={styles.sendButton}>
+          <Pressable style={styles.sendButton} onPress={onSend}>
             <Ionicons name="send" size={20} color="#fff" />
           </Pressable>
         </View>
@@ -50,6 +92,7 @@ export default function ChatScreen({ route }: { route: ChatScreenRouteProp }) {
     </SafeAreaView>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },

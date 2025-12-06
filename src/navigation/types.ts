@@ -16,7 +16,7 @@ export type RootStackParamList = {
   LoginScreen: undefined;
   MainTabs: undefined;
   ChatList: undefined;
-  ChatScreen: { chat: Chat };
+  ChatScreen: { chat: Chat, conversationId: string };
 };
 
 export type MainTabParamList = {

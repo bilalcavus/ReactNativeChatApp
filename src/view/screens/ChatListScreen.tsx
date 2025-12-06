@@ -56,7 +56,8 @@ export default function ChatListScreen() {
         )}
       />
 
-      <Text style={styles.sectionTitle}>Chats</Text>
+        <Text style={styles.sectionTitle}>Chats</Text>
+
       {/* Chat Flatlist gardaş */}
       <FlatList
         data={conversations}
@@ -64,7 +65,7 @@ export default function ChatListScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 16 }}
         renderItem={({ item }) => (
-          <Pressable onPress={() => navigation.navigate('ChatScreen', { chat: item })}>
+          <Pressable onPress={() => navigation.navigate('ChatScreen', { chat: item, conversationId: item.id })}>
             <View style={styles.chatItem}>
               <Image source={{ uri: item.avatar }} style={styles.chatAvatar} />
 
@@ -84,8 +85,8 @@ export default function ChatListScreen() {
             </View>
           </Pressable>
         )}
-      />
-    </View>
+        />
+      </View>
   );
 }
 
@@ -113,7 +114,6 @@ const styles = StyleSheet.create({
   storyItem: {
     marginRight: 20,
     alignItems: 'center',
-    height: 100
   },
 
   storyAvatar: {
@@ -138,7 +138,6 @@ const styles = StyleSheet.create({
   },
 
   sectionTitle: {
-    marginTop: 20,
     marginBottom: 8,
     paddingHorizontal: 16,
     fontSize: 26,
