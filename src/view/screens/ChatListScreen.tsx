@@ -15,55 +15,60 @@ type NavigationProp = CompositeNavigationProp<
 
 export default function ChatListScreen() {
   const navigation = useNavigation<NavigationProp>();
-  const {getConversations, conversations, isLoading, error} = useConversationViewModel();
+  const {getConversations, conversations, isLoading, error, subscribeToConversationUpdates} = useConversationViewModel();
 
   useEffect(() => {
-    getConversations();
-  }, [])
+  getConversations();
+  const unsub = subscribeToConversationUpdates();
+  return unsub;
+}, []);
+
+
+  const renderStoryItem = ({ item }: { item: typeof stories[number] }) => (
+    <View style={styles.storyItem}>
+      {item.id === 'add' ? (
+        <View style={styles.addStoryCircle}>
+          <Icon name="add" size={28} color="blue" />
+        </View>
+      ) : item.avatar ? (
+        <Image source={{ uri: item.avatar }} style={styles.storyAvatar} />
+      ) : (
+        <View style={[styles.storyAvatar, styles.addStoryCircle]} />
+      )}
+      <Text style={styles.storyName}>{item.name}</Text>
+    </View>
+  );
 
   return (
     <View style={styles.container}>
-      {/* Header gardaş */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Stories</Text>
-        <View style={styles.headerIcons}>
-          <Icon name="search-outline" size={22} color="red" style={{ marginRight: 20 }} />
-          <Icon name="ellipsis-horizontal" size={22} color="#000" />
-        </View>
-      </View>
-
-      {/* Story Flatlist gardaş */}
-      <FlatList
-        data={stories}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 16 }}
-        style={{ marginTop: 10 }}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.storyItem}>
-            {item.id === 'add' ? (
-              <View style={styles.addStoryCircle}>
-                <Icon name="add" size={28} color="blue" />
-              </View>
-            ) : item.avatar ? (
-              <Image source={{ uri: item.avatar }} style={styles.storyAvatar} />
-            ) : (
-              <View style={[styles.storyAvatar, styles.addStoryCircle]} />
-            )}
-            <Text style={styles.storyName}>{item.name}</Text>
-          </View>
-        )}
-      />
-
-        <Text style={styles.sectionTitle}>Chats</Text>
-
-      {/* Chat Flatlist gardaş */}
       <FlatList
         data={conversations}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 16 }}
+        contentContainerStyle={styles.listContent}
+        ListHeaderComponent={
+          <View style={styles.listHeader}>
+            <View style={styles.header}>
+              <Text style={styles.headerTitle}>Stories</Text>
+              <View style={styles.headerIcons}>
+                <Icon name="search-outline" size={22} color="red" style={{ marginRight: 20 }} />
+                <Icon name="ellipsis-horizontal" size={22} color="#000" />
+              </View>
+            </View>
+
+            <FlatList
+              data={stories}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.storyContent}
+              style={styles.storyList}
+              keyExtractor={(item) => item.id}
+              renderItem={renderStoryItem}
+            />
+
+            <Text style={styles.sectionTitle}>Chats</Text>
+          </View>
+        }
         renderItem={({ item }) => (
           <Pressable onPress={() => navigation.navigate('ChatScreen', { chat: item, conversationId: item.id })}>
             <View style={styles.chatItem}>
@@ -85,19 +90,27 @@ export default function ChatListScreen() {
             </View>
           </Pressable>
         )}
-        />
-      </View>
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
 
+  listContent: {
+    paddingHorizontal: 16,
+    paddingBottom: 24,
+  },
+
+  listHeader: {
+    paddingTop: 50,
+  },
+
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingTop: 50,
+    alignItems: 'center',
   },
 
   headerTitle: {
@@ -111,6 +124,16 @@ const styles = StyleSheet.create({
   },
 
   /* Stories */
+  storyList: {
+    marginTop: 12,
+    height: 90,
+    flexGrow: 0,
+  },
+
+  storyContent: {
+    paddingVertical: 4,
+  },
+
   storyItem: {
     marginRight: 20,
     alignItems: 'center',
@@ -139,7 +162,7 @@ const styles = StyleSheet.create({
 
   sectionTitle: {
     marginBottom: 8,
-    paddingHorizontal: 16,
+    paddingHorizontal: 8,
     fontSize: 26,
     fontWeight: '700',
     color: '#222',

@@ -7,7 +7,6 @@ import ChatBubble from '../../core/components/ChatBubble';
 import { RootStackParamList } from '../../navigation/types';
 import { useConversationViewModel } from '../../feature/chat/ConversationViewModel';
 import { useAuthViewModel } from '../../feature/auth/AuthViewModel';
-import { sendMessage } from '../../data/service/ChatService';
 
 type ChatScreenRouteProp = RouteProp<RootStackParamList, 'ChatScreen'>;
 
@@ -15,7 +14,7 @@ export default function ChatScreen({ route }: { route: ChatScreenRouteProp }) {
   const { conversationId, chat } = route.params;
   const navigation = useNavigation();
 
-  const { getMessages, messages, isLoading, sendMessage } = useConversationViewModel();
+  const { getMessages, messages, isLoading, sendMessage, subscribeToMessageStream } = useConversationViewModel();
   const { user } = useAuthViewModel();
   const [messageText, setMessageText] = useState("");
 
@@ -33,7 +32,9 @@ const flatListRef = useRef<FlatList>(null);
 
   useEffect(() => {
     getMessages(conversationId);
-  }, [conversationId]);
+    const unsubscribe = subscribeToMessageStream(conversationId);
+    return unsubscribe;
+  }, [conversationId, getMessages, subscribeToMessageStream]);
 
   return (
     <SafeAreaView style={styles.container}>

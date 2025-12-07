@@ -16,4 +16,6 @@ export interface ConversationViewModelState {
     getMessages: (conversationId: string) => Promise<Message[] | null>;
 
     sendMessage: (receiverId: string, text: string) => Promise<Message | null>;
+    subscribeToConversationUpdates: () => () => void;
+    subscribeToMessageStream: (conversationId: string) => () => void;
 }

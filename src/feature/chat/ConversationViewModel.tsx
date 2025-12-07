@@ -5,7 +5,8 @@ import { useAuthViewModel } from "../auth/AuthViewModel";
 import { mapConversationToChatItem } from "../../data/model/chat/ConversationMapper";
 import { SendMessageReq } from "../../data/model/chat/SendMessageReq";
 import { ChatListItem } from "../../data/model/chat/ChatListItem";
-import { Conversation } from "../../data/model/chat/Conversation";
+import { Conversation, Message } from "../../data/model/chat/Conversation";
+import { subscribeToConversationMessages, subscribeToAllMessages } from "../../data/service/SocketService";
 
 export const useConversationViewModel = create<ConversationViewModelState>((set) => ({
     conversations: [],
@@ -78,5 +79,73 @@ export const useConversationViewModel = create<ConversationViewModelState>((set)
         } catch (error) {
             return null;
         }
-    }
-}))
+    },
+
+    subscribeToConversationUpdates: () => {
+  const currentUserId = useAuthViewModel.getState().user?.id;
+
+  return subscribeToAllMessages((message: Message) => {
+    set((state) => ({
+      conversations: applyMessageToConversations(state, message, {
+        currentUserId,
+        activeConversationId: null,
+      }),
+    }));
+  });
+},
+
+
+    subscribeToMessageStream: (conversationId: string) => {
+  const currentUserId = useAuthViewModel.getState().user?.id;
+
+  return subscribeToConversationMessages(conversationId, (message: Message) => {
+    set((state) => {
+      const conversations = applyMessageToConversations(state, message, {
+        currentUserId,
+        activeConversationId: conversationId,
+      });
+
+      if (message.conversationId !== conversationId) {
+        return { conversations };
+      }
+
+      const exists = state.messages.some((m) => m.id === message.id);
+      if (exists) return { conversations };
+
+      return {
+        messages: [message, ...state.messages],
+        conversations,
+      };
+    });
+  });
+},
+
+}));
+
+const applyMessageToConversations = (
+    state: ConversationViewModelState,
+    message: Message,
+    {
+        currentUserId,
+        activeConversationId,
+    }: { currentUserId?: string; activeConversationId: string | null },
+) => {
+    let updated = false;
+    const isActiveConversation = activeConversationId === message.conversationId;
+    const shouldIncrementUnread = !isActiveConversation && message.senderId !== currentUserId;
+
+    const conversations = state.conversations.map((item) => {
+        if (item.id !== message.conversationId) {
+            return item;
+        }
+        updated = true;
+        return {
+            ...item,
+            msg: message.text,
+            time: new Date(message.createdAt).toLocaleTimeString(),
+            unread: isActiveConversation ? 0 : shouldIncrementUnread ? item.unread + 1 : item.unread,
+        };
+    });
+
+    return updated ? conversations : state.conversations;
+};
