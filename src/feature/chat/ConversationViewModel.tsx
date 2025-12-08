@@ -6,7 +6,7 @@ import { mapConversationToChatItem } from "../../data/model/chat/ConversationMap
 import { SendMessageReq } from "../../data/model/chat/SendMessageReq";
 import { ChatListItem } from "../../data/model/chat/ChatListItem";
 import { Conversation, Message } from "../../data/model/chat/Conversation";
-import { subscribeToConversationMessages, subscribeToAllMessages } from "../../data/service/SocketService";
+import { subscribeToConversationMessages, subscribeToAllMessages, emitSendMessage } from "../../data/service/SocketService";
 
 export const useConversationViewModel = create<ConversationViewModelState>((set) => ({
     conversations: [],
@@ -70,6 +70,10 @@ export const useConversationViewModel = create<ConversationViewModelState>((set)
                 receiverId,
                 text
             };
+            emitSendMessage({
+                receiverId,
+                text,
+            });
             const response = await sendMessage(requestBody);
             const newMessage = response.data.message;
             set((state) => ({
@@ -100,6 +104,11 @@ export const useConversationViewModel = create<ConversationViewModelState>((set)
 
   return subscribeToConversationMessages(conversationId, (message: Message) => {
     set((state) => {
+    
+    if (message.senderId === currentUserId) {
+      return state;
+    }
+    
       const conversations = applyMessageToConversations(state, message, {
         currentUserId,
         activeConversationId: conversationId,

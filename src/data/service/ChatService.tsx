@@ -1,23 +1,8 @@
-import axios from "axios";
-import { useAuthViewModel } from "../../feature/auth/AuthViewModel";
 import { ConversationsResponse, Message } from "../model/chat/Conversation";
 import { ConversationHistory } from "../model/chat/ConversationHistory";
 import { SendMessageReq } from "../model/chat/SendMessageReq";
 import { SendMessageRes } from "../model/chat/SendMessageRes";
-export const api = axios.create({
-    baseURL: "http://localhost:4000"
-});
-
-api.interceptors.request.use(
-    (config) => {
-        const token = useAuthViewModel.getState().accessToken;
-        if (token) {
-            config.headers = config.headers || {};
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-    }
-);
+import { api } from "../network/apiClient";
 export const fetchConversations = async (): Promise<ConversationsResponse> => {
     try {
         const response = await api.get<ConversationsResponse>("/messages/conversations")
@@ -47,4 +32,3 @@ export const sendMessage = async(body: SendMessageReq): Promise<SendMessageRes> 
         throw error;
     }
 }
-

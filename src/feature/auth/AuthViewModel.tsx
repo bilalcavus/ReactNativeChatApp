@@ -1,8 +1,9 @@
 import { create } from "zustand";
 
 import { LoginRequest } from "../../data/model/auth/LoginRequest";
-import { login } from "../../data/service/UserService";
+import { login } from "../../data/service/AuthService";
 import { AuthViewModelState } from "./AuthState";
+import { clearTokens, saveTokens } from "../../data/storage/TokenStorage";
 
 
 export const useAuthViewModel = create<AuthViewModelState>((set) => ({
@@ -14,12 +15,29 @@ export const useAuthViewModel = create<AuthViewModelState>((set) => ({
 
   isLoading: false,
   error: null,
+  isReady : false,
+
+  setAuth: (data) => set({
+    user: data.user ?? useAuthViewModel.getState().user,
+    accessToken: data.accessToken ?? useAuthViewModel.getState().accessToken,
+    refreshToken: data.refreshToken ?? useAuthViewModel.getState().refreshToken,
+    accessJti: data.accessJti ?? useAuthViewModel.getState().accessJti,
+    refreshJti: data.refreshJti ?? useAuthViewModel.getState().refreshJti,
+    isReady: true,
+  }),
+
+  setReady: () => set({isReady: true}),
 
   login: async (body: LoginRequest) => {
     try {
       set({ isLoading: true, error: null });
 
       const response = await login(body);
+      await saveTokens({
+        accessToken: response.data.accessToken,
+        refreshToken: response.data.refreshToken,
+      });
+
       set({
         user: response.data.user,
         accessToken: response.data.accessToken,
@@ -27,6 +45,7 @@ export const useAuthViewModel = create<AuthViewModelState>((set) => ({
         accessJti: response.data.accessJti,
         refreshJti: response.data.refreshJti,
         isLoading: false,
+        isReady: true,
       });
 
 
@@ -41,7 +60,8 @@ export const useAuthViewModel = create<AuthViewModelState>((set) => ({
     }
   },
 
-  logout: () => {
+  logout: async () => {
+    await clearTokens();
     set({
       user: null,
       accessToken: null,
@@ -49,6 +69,7 @@ export const useAuthViewModel = create<AuthViewModelState>((set) => ({
       accessJti: null,
       refreshJti: null,
       error: null,
+      isReady: true
     });
   },
 }));

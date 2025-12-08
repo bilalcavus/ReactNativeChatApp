@@ -24,9 +24,7 @@ const LoginScreen = () => {
   
   const handleLogin = async () => {
     const result = await login({email, password});
-    if (result) {
-      navigation.replace("ChatList");
-    }
+    return result;
   };
 
   return (

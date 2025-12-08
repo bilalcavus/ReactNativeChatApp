@@ -11,6 +11,9 @@ export interface AuthViewModelState {
 
     isLoading: boolean;
     error: string | null;
+    isReady: boolean;
+    setReady: () => void;
     login: (body: LoginRequest) => Promise<LoginData | null>;
+    setAuth: (data: Partial<LoginData>) => void;
     logout: () => void;
 }
