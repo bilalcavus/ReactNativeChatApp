@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   Button,
+  Pressable,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -28,9 +29,15 @@ const LoginScreen = () => {
   };
 
   return (
+    
     <View style={authStyles.container}>
-      <Text style={authStyles.title}>Welcome Back 👋</Text>
-      <Text style={authStyles.subtitle}>Chat with your friends instantly</Text>
+      <View style={{justifyContent: 'center', alignItems: 'center'}}>
+
+        
+        <Text style={authStyles.title}>Welcome Back 👋</Text>
+        <Text style={authStyles.subtitle}>Chat with your friends instantly</Text>
+      </View>
+      
 
       {/* EMAIL */}
       <View style={authStyles.inputContainer}>
@@ -67,8 +74,18 @@ const LoginScreen = () => {
       {isLoading ? (
         <ActivityIndicator />
       ) : (
-        <Button title="Login" onPress={handleLogin} />
+        <Pressable style={authStyles.button} onPress={handleLogin}>
+            <Text style= {authStyles.buttonText}>Login</Text>
+        </Pressable>
       )}
+
+      <View style= {authStyles.registerTextView}>
+        <Text style= {authStyles.registerText1}>Don't have an account?</Text>
+        <Pressable onPress={() => navigation.navigate('LoginScreen')}>
+          <Text style= {authStyles.registerText2}>Register</Text>
+        </Pressable>
+        
+      </View>
      
     </View>
   );

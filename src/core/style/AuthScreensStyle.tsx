@@ -7,12 +7,16 @@ export const authStyles = StyleSheet.create({
     backgroundColor: "#fff",
     paddingHorizontal: 25,
     paddingTop: 80,
+    justifyContent: 'center'
   },
+
+  text: { color: "white", fontSize: 26 },
 
   title: {
     fontSize: 32,
-    fontWeight: "700",
+    fontWeight: "500",
     color: "#111",
+    paddingBottom: 30
   },
 
   subtitle: {
@@ -57,5 +61,21 @@ export const authStyles = StyleSheet.create({
     color: "#777",
     textAlign: "center",
   },
+
+  registerTextView: {
+    flexDirection: 'row',
+    paddingTop: 20,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  registerText1: {
+    marginRight: 6,
+    fontSize: 16,
+  },
+  registerText2: {
+    fontSize: 16,
+    paddingRight: 10,
+    color: 'green'
+  }
 });
 
