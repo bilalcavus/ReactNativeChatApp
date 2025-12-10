@@ -6,6 +6,8 @@ import ChatScreen from '../view/screens/ChatScreen';
 import ChatListScreen from '../view/screens/ChatListScreen';
 import LoginScreen from '../view/screens/LoginScreen';
 import { useAuthViewModel } from '../feature/auth/AuthViewModel';
+import RegisterScreen from '../view/screens/RegisterScreen';
+
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -24,7 +26,11 @@ export default function AppNavigator() {
           <Stack.Screen name="ChatScreen" component={ChatScreen} />
         </>
       ): (
+        <>
           <Stack.Screen name="LoginScreen" component={LoginScreen} />
+          <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
+        </>
+          
       )}
       
     </Stack.Navigator>

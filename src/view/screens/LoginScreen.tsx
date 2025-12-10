@@ -14,10 +14,10 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { authStyles } from "../../core/style/AuthScreensStyle";
 import { useAuthViewModel } from "../../feature/auth/AuthViewModel";
-import { RootStackParamList } from "../../navigation/types";
+import { LoginStackParamList, RootStackParamList } from "../../navigation/types";
 
 const LoginScreen = () => {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<NativeStackNavigationProp<LoginStackParamList>>();
   const {login, isLoading, error} = useAuthViewModel();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -81,7 +81,7 @@ const LoginScreen = () => {
 
       <View style= {authStyles.registerTextView}>
         <Text style= {authStyles.registerText1}>Don't have an account?</Text>
-        <Pressable onPress={() => navigation.navigate('LoginScreen')}>
+        <Pressable onPress={() => navigation.push('RegisterScreen')}>
           <Text style= {authStyles.registerText2}>Register</Text>
         </Pressable>
         
