@@ -19,6 +19,16 @@ export const useAuthViewModel = create<AuthViewModelState>((set) => ({
   error: null,
   isReady : false,
 
+  resetAuthState: () => set({
+    user: null,
+    accessToken: null,
+    refreshToken: null,
+    accessJti: null,
+    refreshJti: null,
+    isLoading: false,
+    error: null,
+  }),
+
   setAuth: (data) => set({
     user: data.user ?? useAuthViewModel.getState().user,
     accessToken: data.accessToken ?? useAuthViewModel.getState().accessToken,
@@ -93,16 +103,8 @@ export const useAuthViewModel = create<AuthViewModelState>((set) => ({
     set({ isLoading: true, error: null });
     const response  = await logout(body);
     await clearTokens();
-    set({
-      user: null,
-      accessToken: null,
-      refreshToken: null,
-      accessJti: null,
-      refreshJti: null,
-      error: null,
-      isReady: true,
-      isLoading: false,
-    });
+    useAuthViewModel.getState().resetAuthState();
+    set({ isReady: true, isLoading: false });
     return response.success;
   },
 }));

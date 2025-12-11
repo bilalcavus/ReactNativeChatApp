@@ -15,7 +15,7 @@ export default function ChatScreen({ route }: { route: ChatScreenRouteProp }) {
   const { conversationId, chat } = route.params;
   const navigation = useNavigation();
 
-  const { getMessages, messages, isLoading, sendMessage, subscribeToMessageStream } = useConversationViewModel();
+  const { getMessages, messages, isLoading, sendMessage, subscribeToMessageStream, markSeen } = useConversationViewModel();
   const { user } = useAuthViewModel();
   const [messageText, setMessageText] = useState("");
 
@@ -33,9 +33,10 @@ const flatListRef = useRef<FlatList>(null);
 
   useEffect(() => {
     getMessages(conversationId);
+    markSeen(conversationId);
     const unsubscribe = subscribeToMessageStream(conversationId);
     return unsubscribe;
-  }, [conversationId, getMessages, subscribeToMessageStream]);
+  }, [conversationId, getMessages, subscribeToMessageStream, markSeen]);
 
   return (
     <SafeAreaView style={styles.container}>

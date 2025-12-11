@@ -23,9 +23,8 @@ export default function App() {
         ]);
 
         if (!accessToken || !refreshToken) {
-          const storedRefreshToken = await getRefreshToken();
           await clearTokens();
-          useAuthViewModel.getState().logout({refreshToken: storedRefreshToken ?? ""});
+          useAuthViewModel.getState().resetAuthState();
           return;
         }
 
@@ -50,9 +49,8 @@ export default function App() {
         });
 
       } catch (error) {
-        const storedRefreshToken = await getRefreshToken();
         await clearTokens();
-        useAuthViewModel.getState().logout({ refreshToken: storedRefreshToken ?? "" });
+        useAuthViewModel.getState().resetAuthState();
       } finally {
         useAuthViewModel.getState().setReady();
         setLoading(false);

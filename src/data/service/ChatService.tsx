@@ -1,5 +1,6 @@
 import { ConversationsResponse, Message } from "../model/chat/Conversation";
 import { ConversationHistory } from "../model/chat/ConversationHistory";
+import { MarkSeenResponse } from "../model/chat/MarkSeenResponse";
 import { SendMessageReq } from "../model/chat/SendMessageReq";
 import { SendMessageRes } from "../model/chat/SendMessageRes";
 import { UnreadCountResponse } from "../model/chat/UnreadCount";
@@ -42,4 +43,11 @@ export const fetchUnreadCount = async (conversationId: string): Promise<number> 
   }
 
   return count;
+};
+
+export const markSeen = async (conversationId: string): Promise<boolean> => {
+  const response = await api.post<MarkSeenResponse>("/messages/mark-seen", {
+    conversationId,
+  });
+  return !!response.data?.success;
 };

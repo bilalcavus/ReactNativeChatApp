@@ -4,8 +4,8 @@ import { ChatListItem } from "../../../data/model/chat/ChatListItem";
 import { Conversation, Message } from "../../../data/model/chat/Conversation";
 import { mapConversationToChatItem } from "../../../data/model/chat/ConversationMapper";
 import { SendMessageReq } from "../../../data/model/chat/SendMessageReq";
-import { fetchConversations, fetchMessages, fetchUnreadCount, sendMessage} from "../../../data/service/ChatService";
-import { emitSendMessage, subscribeToAllMessages, subscribeToConversationMessages } from "../../../data/service/SocketService";
+import { fetchConversations, fetchMessages, fetchUnreadCount, markSeen as markSeenApi, sendMessage} from "../../../data/service/ChatService";
+import { emitSeen, emitSendMessage, subscribeToAllMessages, subscribeToConversationMessages } from "../../../data/service/SocketService";
 import { useAuthViewModel } from "../auth/AuthViewModel";
 
 
@@ -17,6 +17,7 @@ export const useConversationViewModel = create<ConversationViewModelState>((set)
     isLoading: false,
     error: null,
     unreadCountMap: {},
+    isMarkSeen: false,
 
     getConversations: async () => {
         try {
@@ -42,6 +43,28 @@ export const useConversationViewModel = create<ConversationViewModelState>((set)
             set({
                 error: err.response?.data?.message || "Conversation fetch failed",
                 isLoading: false,
+            });
+            return null;
+        }
+    },
+
+    markSeen: async (conversationId: string) => {
+        try {
+            const success = await markSeenApi(conversationId);
+            if (success) {
+                emitSeen(conversationId);
+                set((state) => ({
+                    isMarkSeen: true,
+                    unreadCountMap: { ...state.unreadCountMap, [conversationId]: 0 },
+                    conversations: state.conversations.map((c) =>
+                        c.id === conversationId ? { ...c, unread: 0 } : c
+                    ),
+                }));
+            }
+            return success;
+        } catch (error: any) {
+            set({
+                error: error.response?.data?.message || "Mark seen failed",
             });
             return null;
         }
