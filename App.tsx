@@ -7,9 +7,9 @@ import {
   getRefreshToken,
   saveTokens,
 } from "./src/data/storage/TokenStorage";
-import { useAuthViewModel } from "./src/feature/auth/AuthViewModel";
 import { ActivityIndicator, View } from "react-native";
 import axios from "axios";
+import { useAuthViewModel } from "./src/feature/state/auth/AuthViewModel";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -23,8 +23,9 @@ export default function App() {
         ]);
 
         if (!accessToken || !refreshToken) {
+          const storedRefreshToken = await getRefreshToken();
           await clearTokens();
-          useAuthViewModel.getState().logout();
+          useAuthViewModel.getState().logout({refreshToken: storedRefreshToken ?? ""});
           return;
         }
 
@@ -49,8 +50,9 @@ export default function App() {
         });
 
       } catch (error) {
+        const storedRefreshToken = await getRefreshToken();
         await clearTokens();
-        useAuthViewModel.getState().logout();
+        useAuthViewModel.getState().logout({ refreshToken: storedRefreshToken ?? "" });
       } finally {
         useAuthViewModel.getState().setReady();
         setLoading(false);

@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from "axios";
 import { getRefreshToken, saveTokens, clearTokens } from "../storage/TokenStorage";
-import { useAuthViewModel } from "../../feature/auth/AuthViewModel";
+import { useAuthViewModel } from "../../feature/state/auth/AuthViewModel";
 
 let isRefreshing = false;
 let failedQueue: any[] = [];
@@ -72,9 +72,14 @@ export const attachInterceptors = (api: AxiosInstance) => {
         return api(originalRequest);
 
       } catch (err) {
+        const storedRefreshToken = await getRefreshToken();
+        if (!storedRefreshToken) {
+          console.warn('No refresh token available');
+          return;
+        }
         processQueue(err, null);
         await clearTokens();
-        useAuthViewModel.getState().logout();
+        useAuthViewModel.getState().logout({refreshToken: storedRefreshToken});
         return Promise.reject(err);
 
       } finally {

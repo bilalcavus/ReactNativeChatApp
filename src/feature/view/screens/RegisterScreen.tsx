@@ -1,11 +1,11 @@
 import { ActivityIndicator, Pressable, Text, TextInput, TouchableOpacity, View } from "react-native"
-import { authStyles } from "../../core/style/AuthScreensStyle"
 import { useNavigation } from "@react-navigation/native"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
-import { LoginStackParamList } from "../../navigation/types"
 import Icon from "react-native-vector-icons/Ionicons";
 import { useState } from "react"
-import { useAuthViewModel } from "../../feature/auth/AuthViewModel"
+import { authStyles } from "../../../core/style/AuthScreensStyle";
+import { LoginStackParamList } from "../../../navigation/types";
+import { useAuthViewModel } from "../../state/auth/AuthViewModel";
 
 const RegisterScreen = () =>  {
     const navigation = useNavigation<NativeStackNavigationProp<LoginStackParamList>>()

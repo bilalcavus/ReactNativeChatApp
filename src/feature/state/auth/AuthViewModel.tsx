@@ -1,10 +1,11 @@
 import { create } from "zustand";
-
-import { LoginRequest } from "../../data/model/auth/LoginRequest";
-import { login, register } from "../../data/service/AuthService";
+import { LoginRequest } from "../../../data/model/auth/LoginRequest";
+import { LogoutRequest } from "../../../data/model/auth/LogoutRequest";
+import { RegisterRequest } from "../../../data/model/auth/RegisterRequest";
+import { login, register, logout } from "../../../data/service/AuthService";
 import { AuthViewModelState } from "./AuthState";
-import { clearTokens, saveTokens } from "../../data/storage/TokenStorage";
-import { RegisterRequest } from "../../data/model/auth/RegisterRequest";
+import { clearTokens, saveTokens } from "../../../data/storage/TokenStorage";
+
 
 
 export const useAuthViewModel = create<AuthViewModelState>((set) => ({
@@ -88,7 +89,9 @@ export const useAuthViewModel = create<AuthViewModelState>((set) => ({
     }
   },
 
-  logout: async () => {
+  logout: async (body: LogoutRequest) => {
+    set({ isLoading: true, error: null });
+    const response  = await logout(body);
     await clearTokens();
     set({
       user: null,
@@ -97,7 +100,9 @@ export const useAuthViewModel = create<AuthViewModelState>((set) => ({
       accessJti: null,
       refreshJti: null,
       error: null,
-      isReady: true
+      isReady: true,
+      isLoading: false,
     });
+    return response.success;
   },
 }));

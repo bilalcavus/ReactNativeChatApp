@@ -3,6 +3,8 @@ import { LoginRequest } from '../model/auth/LoginRequest';
 import { LoginResponse } from '../model/auth/LoginResponse';
 import { api } from "../network/apiClient";
 import { RegisterRequest } from "../model/auth/RegisterRequest";
+import { LogoutRequest } from "../model/auth/LogoutRequest";
+import { LogoutResponse } from "../model/auth/LogoutResponse";
 
 export const login = async(body: LoginRequest): Promise<LoginResponse> => {
     const res = await api.post<LoginResponse>("/auth/login", body);
@@ -11,5 +13,10 @@ export const login = async(body: LoginRequest): Promise<LoginResponse> => {
 
 export const register = async(body: RegisterRequest): Promise<LoginResponse> => {
     const res = await api.post<LoginResponse>("/auth/register", body);
+    return res.data;
+}
+
+export const logout = async (body: LogoutRequest): Promise<LogoutResponse> => {
+    const res = await api.post<LogoutResponse>("/auth/logout", body)
     return res.data;
 }

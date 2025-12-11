@@ -3,10 +3,11 @@ import { View, StyleSheet, Text, Image, KeyboardAvoidingView, Platform, TextInpu
 import { RouteProp, useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import ChatBubble from '../../core/components/ChatBubble';
-import { RootStackParamList } from '../../navigation/types';
-import { useConversationViewModel } from '../../feature/chat/ConversationViewModel';
-import { useAuthViewModel } from '../../feature/auth/AuthViewModel';
+import ChatBubble from '../../../core/components/ChatBubble';
+import { RootStackParamList } from '../../../navigation/types';
+import { useAuthViewModel } from '../../state/auth/AuthViewModel';
+import { useConversationViewModel } from '../../state/chat/ConversationViewModel';
+
 
 type ChatScreenRouteProp = RouteProp<RootStackParamList, 'ChatScreen'>;
 

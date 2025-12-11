@@ -12,9 +12,9 @@ import {
 import Icon from "react-native-vector-icons/Ionicons";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
-import { authStyles } from "../../core/style/AuthScreensStyle";
-import { useAuthViewModel } from "../../feature/auth/AuthViewModel";
-import { LoginStackParamList, RootStackParamList } from "../../navigation/types";
+import { authStyles } from "../../../core/style/AuthScreensStyle";
+import { LoginStackParamList } from "../../../navigation/types";
+import { useAuthViewModel } from "../../state/auth/AuthViewModel";
 
 const LoginScreen = () => {
   const navigation = useNavigation<NativeStackNavigationProp<LoginStackParamList>>();

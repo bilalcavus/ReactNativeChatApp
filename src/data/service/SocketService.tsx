@@ -1,6 +1,6 @@
 import { io, Socket } from "socket.io-client";
-import { useAuthViewModel } from "../../feature/auth/AuthViewModel";
 import { Message } from "../model/chat/Conversation";
+import { useAuthViewModel } from "../../feature/state/auth/AuthViewModel";
 
 const SOCKET_URL = "http://localhost:4000";
 

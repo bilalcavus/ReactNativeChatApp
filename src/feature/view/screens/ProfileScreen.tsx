@@ -1,11 +1,25 @@
 import React from 'react';
 import { View, Text, Button, StyleSheet, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import ListItem from '../../core/components/ProfileListItem';
+import ListItem from '../../../core/components/ProfileListItem';
+import { useAuthViewModel } from '../../state/auth/AuthViewModel';
+import { getRefreshToken } from '../../../data/storage/TokenStorage';
 
 
 
-export default function ProfileScreen() {
+export default  function ProfileScreen() {
+  const {logout, isLoading, error} = useAuthViewModel();
+  
+
+  const handleLogout = async () => {
+    const storedRefreshToken = await getRefreshToken();
+    if (!storedRefreshToken) {
+      console.warn('No refresh token available');
+      return;
+    }
+    const result = await logout({refreshToken: storedRefreshToken});
+    return result;
+  }
   return (
     <View style={styles.container}>
 
@@ -45,17 +59,10 @@ export default function ProfileScreen() {
         title="Help center" 
         onPress={() => console.log("Help")} 
       />
-
-      <ListItem 
-        icon="shield-checkmark-outline" 
-        title="Security & privacy" 
-        onPress={() => console.log("Security")} 
-      />
-
       <ListItem 
         icon="log-out-outline" 
         title="Log out" 
-        onPress={() => console.log("Logout")} 
+        onPress={handleLogout} 
       />
       </View>
     </View>

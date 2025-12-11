@@ -1,12 +1,13 @@
 import { create } from "zustand";
 import { ConversationViewModelState } from "./ConversationState";
-import { fetchConversations, fetchMessages, sendMessage } from "../../data/service/ChatService";
+import { ChatListItem } from "../../../data/model/chat/ChatListItem";
+import { Conversation, Message } from "../../../data/model/chat/Conversation";
+import { mapConversationToChatItem } from "../../../data/model/chat/ConversationMapper";
+import { SendMessageReq } from "../../../data/model/chat/SendMessageReq";
+import { fetchConversations, fetchMessages, fetchUnreadCount, sendMessage} from "../../../data/service/ChatService";
+import { emitSendMessage, subscribeToAllMessages, subscribeToConversationMessages } from "../../../data/service/SocketService";
 import { useAuthViewModel } from "../auth/AuthViewModel";
-import { mapConversationToChatItem } from "../../data/model/chat/ConversationMapper";
-import { SendMessageReq } from "../../data/model/chat/SendMessageReq";
-import { ChatListItem } from "../../data/model/chat/ChatListItem";
-import { Conversation, Message } from "../../data/model/chat/Conversation";
-import { subscribeToConversationMessages, subscribeToAllMessages, emitSendMessage } from "../../data/service/SocketService";
+
 
 export const useConversationViewModel = create<ConversationViewModelState>((set) => ({
     conversations: [],
@@ -15,6 +16,7 @@ export const useConversationViewModel = create<ConversationViewModelState>((set)
     receiverId: null,
     isLoading: false,
     error: null,
+    unreadCountMap: {},
 
     getConversations: async () => {
         try {
@@ -81,6 +83,31 @@ export const useConversationViewModel = create<ConversationViewModelState>((set)
             }));
             return newMessage;
         } catch (error) {
+            return null;
+        }
+    },
+
+    getUnreadCount: async(conversationId : string) => {
+        try {
+            set({isLoading: true, error: null});
+            const response = await fetchUnreadCount(conversationId);
+            const count = response;
+            set((state) => ({
+                unreadCountMap: {
+                    ...state.unreadCountMap,
+                    [conversationId]: count,
+                }, 
+                conversations: state.conversations.map((c) =>
+                  c.id === conversationId ? { ...c, unread: count } : c
+                ),
+                isLoading: false
+            }))
+            return count;
+        } catch (error: any) {
+            set({
+                error: error.response?.data?.message || "Unread count fetching failed",
+                isLoading: false,
+            });
             return null;
         }
     },

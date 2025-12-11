@@ -2,11 +2,11 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MainTabs from './MainTabs';
 import { RootStackParamList } from './types';
-import ChatScreen from '../view/screens/ChatScreen';
-import ChatListScreen from '../view/screens/ChatListScreen';
-import LoginScreen from '../view/screens/LoginScreen';
-import { useAuthViewModel } from '../feature/auth/AuthViewModel';
-import RegisterScreen from '../view/screens/RegisterScreen';
+import { useAuthViewModel } from '../feature/state/auth/AuthViewModel';
+import ChatListScreen from '../feature/view/screens/ChatListScreen';
+import ChatScreen from '../feature/view/screens/ChatScreen';
+import LoginScreen from '../feature/view/screens/LoginScreen';
+import RegisterScreen from '../feature/view/screens/RegisterScreen';
 
 
 const Stack = createNativeStackNavigator<RootStackParamList>();

@@ -4,9 +4,10 @@ import { CompositeNavigationProp, useNavigation } from '@react-navigation/native
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Chat, MainTabParamList, RootStackParamList } from '../../navigation/types';
-import { chats, stories } from '../../data/mock';
-import { useConversationViewModel } from '../../feature/chat/ConversationViewModel';
+import { stories } from '../../../data/mock';
+import { useConversationViewModel } from '../../state/chat/ConversationViewModel';
+import { MainTabParamList, RootStackParamList } from '../../../navigation/types';
+
 
 type NavigationProp = CompositeNavigationProp<
   BottomTabNavigationProp<MainTabParamList, 'Chat'>,
@@ -16,12 +17,24 @@ type NavigationProp = CompositeNavigationProp<
 export default function ChatListScreen() {
   const navigation = useNavigation<NavigationProp>();
   const {getConversations, conversations, isLoading, error, subscribeToConversationUpdates} = useConversationViewModel();
-
+  const unreadCountMap = useConversationViewModel((s) => s.unreadCountMap);
   useEffect(() => {
-  getConversations();
+  const load = async () => {
+    const convs = await getConversations();
+
+    if (convs) {
+      convs.forEach((c) => {
+        useConversationViewModel.getState().getUnreadCount(c.id);
+      });
+    }
+  };
+
+  load();
+
   const unsub = subscribeToConversationUpdates();
   return unsub;
 }, []);
+
 
 
   const renderStoryItem = ({ item }: { item: typeof stories[number] }) => (
@@ -41,6 +54,7 @@ export default function ChatListScreen() {
 
   return (
     <View style={styles.container}>
+
       <FlatList
         data={conversations}
         keyExtractor={(item) => item.id}
@@ -69,7 +83,9 @@ export default function ChatListScreen() {
             <Text style={styles.sectionTitle}>Chats</Text>
           </View>
         }
-        renderItem={({ item }) => (
+        renderItem={({ item }) => { 
+          const unread = unreadCountMap[item.id] ?? item.unread ?? 0;
+          return (
           <Pressable onPress={() => navigation.navigate('ChatScreen', { chat: item, conversationId: item.id })}>
             <View style={styles.chatItem}>
               <Image source={{ uri: item.avatar }} style={styles.chatAvatar} />
@@ -81,15 +97,22 @@ export default function ChatListScreen() {
 
               <View style={styles.rightContainer}>
                 <Text style={styles.time}>{item.time}</Text>
-                {item.unread > 0 && (
+                {unread > 0 && (
                   <View style={styles.badge}>
-                    <Text style={styles.badgeText}>{item.unread}</Text>
+                    <Text style={styles.badgeText}>{unread}</Text>
                   </View>
                 )}
               </View>
             </View>
           </Pressable>
-        )}
+        )}}
+        ListEmptyComponent={
+          <View style={{ alignItems: "center", marginTop: 40, flexDirection: 'column' }}>
+            <Text style={{ color: "#999", fontSize: 16 }}>
+                Has not messages yet
+            </Text>
+          </View>
+        } 
       />
     </View>
   );

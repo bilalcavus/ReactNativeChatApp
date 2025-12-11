@@ -1,6 +1,8 @@
-import { LoginRequest } from "../../data/model/auth/LoginRequest";
-import { LoginData, User } from "../../data/model/auth/LoginResponse";
-import { RegisterRequest } from "../../data/model/auth/RegisterRequest";
+import { LoginRequest } from "../../../data/model/auth/LoginRequest";
+import { User, LoginData } from "../../../data/model/auth/LoginResponse";
+import { LogoutRequest } from "../../../data/model/auth/LogoutRequest";
+import { RegisterRequest } from "../../../data/model/auth/RegisterRequest";
+
 
 
 export interface AuthViewModelState {
@@ -17,5 +19,5 @@ export interface AuthViewModelState {
     login: (body: LoginRequest) => Promise<LoginData | null>;
     setAuth: (data: Partial<LoginData>) => void;
     register: (body: RegisterRequest) => Promise<LoginData | null>;
-    logout: () => void;
+    logout: (body: LogoutRequest) => Promise<boolean | null>;
 }

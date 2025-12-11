@@ -2,6 +2,7 @@ import { ConversationsResponse, Message } from "../model/chat/Conversation";
 import { ConversationHistory } from "../model/chat/ConversationHistory";
 import { SendMessageReq } from "../model/chat/SendMessageReq";
 import { SendMessageRes } from "../model/chat/SendMessageRes";
+import { UnreadCountResponse } from "../model/chat/UnreadCount";
 import { api } from "../network/apiClient";
 export const fetchConversations = async (): Promise<ConversationsResponse> => {
     try {
@@ -32,3 +33,13 @@ export const sendMessage = async(body: SendMessageReq): Promise<SendMessageRes> 
         throw error;
     }
 }
+export const fetchUnreadCount = async (conversationId: string): Promise<number> => {
+  const response = await api.get<UnreadCountResponse>(`/messages/${conversationId}/unread-count`);
+  const count = response.data?.data?.count;
+
+  if (typeof count !== "number") {
+    throw new Error("Unread count missing in response");
+  }
+
+  return count;
+};
