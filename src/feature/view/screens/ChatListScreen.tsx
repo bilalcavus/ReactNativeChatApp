@@ -7,6 +7,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { stories } from '../../../data/mock';
 import { useConversationViewModel } from '../../state/chat/ConversationViewModel';
 import { MainTabParamList, RootStackParamList } from '../../../navigation/types';
+import { useAuthViewModel } from '../../state/auth/AuthViewModel';
 
 
 type NavigationProp = CompositeNavigationProp<
@@ -85,6 +86,8 @@ export default function ChatListScreen() {
         }
         renderItem={({ item }) => { 
           const unread = unreadCountMap[item.id] ?? item.unread ?? 0;
+          const currentUserId = useAuthViewModel.getState().user?.id;
+          const isMe = item.lastMessageSenderId === currentUserId;
           return (
           <Pressable onPress={() => navigation.navigate('ChatScreen', { chat: item, conversationId: item.id })}>
             <View style={styles.chatItem}>
@@ -92,7 +95,12 @@ export default function ChatListScreen() {
 
               <View style={styles.chatTextContainer}>
                 <Text style={styles.chatName}>{item.name}</Text>
-                <Text style={styles.chatMsg}>{item.msg}</Text>
+                <View style= {styles.messageRow}>
+                    {isMe && (
+                      <Text style={styles.chatMsg}>Siz:</Text>
+                    )}
+                    <Text style={styles.chatMsg}>{item.msg}</Text>
+                </View>
               </View>
 
               <View style={styles.rightContainer}>
@@ -209,6 +217,10 @@ const styles = StyleSheet.create({
 
   chatTextContainer: {
     flex: 1,
+  },
+
+  messageRow: {
+    flexDirection: 'row',
   },
 
   chatName: {

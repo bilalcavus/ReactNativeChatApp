@@ -6,4 +6,5 @@ export interface ChatListItem {
   msg: string;
   time: string;
   unread: number;
+  lastMessageSenderId?: string;
 }

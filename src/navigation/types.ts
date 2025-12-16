@@ -5,6 +5,7 @@ export type Chat = {
   avatar: string;
   time: string;
   unread: number;
+  partnerId: string;
 };
 
 export type Login = {

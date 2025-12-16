@@ -10,7 +10,7 @@ export interface ConversationViewModelState {
     isLoading: boolean;
     error: string | null;
     isMarkSeen?: boolean;
-
+    
     getConversations: () => Promise<ChatListItem[] | null>;
     getMessages: (conversationId: string) => Promise<Message[] | null>;
     getUnreadCount : (conversationId : string) => Promise<number | null>

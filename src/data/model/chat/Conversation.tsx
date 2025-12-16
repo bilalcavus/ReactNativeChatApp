@@ -10,6 +10,7 @@ export interface Conversation {
   updatedAt: string;
   createdAt: string;
   lastMessage: Message;
+  receiverUsername: string;
 }
 
 

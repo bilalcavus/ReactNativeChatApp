@@ -20,12 +20,14 @@ export default function ChatScreen({ route }: { route: ChatScreenRouteProp }) {
   const [messageText, setMessageText] = useState("");
 
   const onSend = async () => {
-  await sendMessage(chat.name, messageText);
-  setMessageText("");
-  setTimeout(() => {
-  flatListRef.current?.scrollToIndex({ index: 0, animated: true });
-}, 50);
-};
+    const text = messageText.trim();
+    if (!text) return;
+    await sendMessage(chat.partnerId, text);
+    setMessageText("");
+    setTimeout(() => {
+      flatListRef.current?.scrollToIndex({ index: 0, animated: true });
+    }, 50);
+  };
 
 const flatListRef = useRef<FlatList>(null);
 
