@@ -48,6 +48,15 @@ const joinConversation = (conversationId: string): Socket => {
   return activeSocket;
 };
 
+/** Tüm verilen konuşma odalarına katılmak için yardımcı fonksiyon. */
+export const joinConversationRooms = (conversationIds: string[]) => {
+  const activeSocket = getActiveSocket();
+  conversationIds.forEach((id) => {
+    activeSocket.emit("join_room", id);
+  });
+  return activeSocket;
+};
+
 export const subscribeToConversationMessages = (
   conversationId: string,
   handler: (message: Message) => void
@@ -67,9 +76,7 @@ export const subscribeToConversationMessages = (
   };
 };
 
-export const subscribeToAllMessages = (
-  handler: (message: Message) => void
-) => {
+export const subscribeToAllMessages = (handler: (message: Message) => void) => {
   const activeSocket = getActiveSocket();
 
   activeSocket.on("send_message", handler);

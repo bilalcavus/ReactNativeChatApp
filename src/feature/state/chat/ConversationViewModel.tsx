@@ -4,8 +4,20 @@ import { ChatListItem } from "../../../data/model/chat/ChatListItem";
 import { Conversation, Message } from "../../../data/model/chat/Conversation";
 import { mapConversationToChatItem } from "../../../data/model/chat/ConversationMapper";
 import { SendMessageReq } from "../../../data/model/chat/SendMessageReq";
-import { fetchConversations, fetchMessages, fetchUnreadCount, markSeen as markSeenApi, sendMessage} from "../../../data/service/ChatService";
-import { emitSeen, emitSendMessage, subscribeToAllMessages, subscribeToConversationMessages } from "../../../data/service/SocketService";
+import {
+  fetchConversations,
+  fetchMessages,
+  fetchUnreadCount,
+  markSeen as markSeenApi,
+  sendMessage,
+} from "../../../data/service/ChatService";
+import {
+  emitSeen,
+  emitSendMessage,
+  joinConversationRooms,
+  subscribeToAllMessages,
+  subscribeToConversationMessages,
+} from "../../../data/service/SocketService";
 import { useAuthViewModel } from "../auth/AuthViewModel";
 
 
@@ -21,7 +33,7 @@ export const useConversationViewModel = create<ConversationViewModelState>((set)
 
     getConversations: async () => {
         try {
-            set({isLoading: true, error: null});
+            set({ isLoading: true, error: null });
 
             const response = await fetchConversations();
 
@@ -31,6 +43,7 @@ export const useConversationViewModel = create<ConversationViewModelState>((set)
                 mapConversationToChatItem(c, currentUser!.id)
             );
 
+            joinConversationRooms(mapped.map((c) => c.id));
 
             set({
                 conversations: mapped,
@@ -88,24 +101,19 @@ export const useConversationViewModel = create<ConversationViewModelState>((set)
         }
     },
 
-    sendMessage: async(receiverId, text) => {
-        try {   
-            set({isLoading: true, error: null});
-            const requestBody: SendMessageReq = {
-                receiverId,
-                text
-            };
+    sendMessage: async (receiverId, text) => {
+        try {
+            set({ isLoading: true, error: null });
+
             emitSendMessage({
                 receiverId,
                 text,
             });
-            const response = await sendMessage(requestBody);
-            const newMessage = response.data.message;
-            set((state) => ({
-                messages: [newMessage, ...state.messages],
-            }));
-            return newMessage;
+
+            set({ isLoading: false });
+            return null;
         } catch (error) {
+            set({ isLoading: false });
             return null;
         }
     },
@@ -139,12 +147,28 @@ export const useConversationViewModel = create<ConversationViewModelState>((set)
   const currentUserId = useAuthViewModel.getState().user?.id;
 
   return subscribeToAllMessages((message: Message) => {
-    set((state) => ({
-      conversations: applyMessageToConversations(state, message, {
+    set((state) => {
+      const conversations = applyMessageToConversations(state, message, {
         currentUserId,
         activeConversationId: null,
-      }),
-    }));
+      });
+
+      const updatedConv = conversations.find(
+        (c) => c.id === message.conversationId
+      );
+
+      if (!updatedConv) {
+        return { conversations };
+      }
+
+      return {
+        conversations,
+        unreadCountMap: {
+          ...state.unreadCountMap,
+          [updatedConv.id]: updatedConv.unread,
+        },
+      };
+    });
   });
 },
 
@@ -153,12 +177,12 @@ export const useConversationViewModel = create<ConversationViewModelState>((set)
   const currentUserId = useAuthViewModel.getState().user?.id;
 
   return subscribeToConversationMessages(conversationId, (message: Message) => {
-    set((state) => {
-    
-    if (message.senderId === currentUserId) {
-      return state;
+    // Eğer bu mesajı gönderen ben değilsem ve şu an bu konuşmadaysak, seen olarak işaretle
+    if (message.senderId !== currentUserId) {
+      useConversationViewModel.getState().markSeen(conversationId);
     }
-    
+
+    set((state) => {
       const conversations = applyMessageToConversations(state, message, {
         currentUserId,
         activeConversationId: conversationId,
